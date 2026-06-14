@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\HomeContentController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ContactQueryController;
+use App\Http\Controllers\Admin\NewsletterController;
 use App\Models\Service;
 use Spatie\Sitemap\SitemapGenerator;
 
@@ -102,6 +104,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/blog/categories', [BlogCategoryController::class, 'store'])->name('blog.categories.store');
     Route::post('/blog/categories/{id}', [BlogCategoryController::class, 'update'])->name('blog.categories.update');
     Route::delete('/blog/categories/{id}', [BlogCategoryController::class, 'destroy'])->name('blog.categories.destroy');
+    
+    // Queries
+    Route::get('/queries/contact', [ContactQueryController::class, 'index'])->name('queries.contact');
+    Route::post('/queries/contact/{id}/status', [ContactQueryController::class, 'updateStatus'])->name('queries.contact.updateStatus');
+    Route::delete('/queries/contact/{id}', [ContactQueryController::class, 'destroy'])->name('queries.contact.destroy');
+    
+    Route::get('/queries/newsletter', [NewsletterController::class, 'index'])->name('queries.newsletter');
+    Route::post('/queries/newsletter/{id}/toggle-status', [NewsletterController::class, 'toggleStatus'])->name('queries.newsletter.toggleStatus');
+    Route::delete('/queries/newsletter/{id}', [NewsletterController::class, 'destroy'])->name('queries.newsletter.destroy');
     
     Route::get('/queries/support', function () {
         return Inertia::render('Admin/Support');

@@ -31,7 +31,7 @@ class SettingController extends Controller
         ]);
     }
 
-    public function updateGeneral(\Illuminate\Http\Request $request)
+    public function updateGeneral(\Illuminate\Http\Request $request, \App\Services\ImageService $imageService)
     {
         $settings = \App\Models\AppSetting::first();
 
@@ -59,7 +59,7 @@ class SettingController extends Controller
                 $oldPath = str_replace('/storage/', '', $settings->logo_path);
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('logo')->store('settings', 'public');
+            $path = $imageService->uploadAndConvert($request->file('logo'), 'settings', 'public');
             $data['logo_path'] = \Illuminate\Support\Facades\Storage::url($path);
         }
 
@@ -68,7 +68,7 @@ class SettingController extends Controller
                 $oldPath = str_replace('/storage/', '', $settings->favicon_path);
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('favicon')->store('settings', 'public');
+            $path = $imageService->uploadAndConvert($request->file('favicon'), 'settings', 'public');
             $data['favicon_path'] = \Illuminate\Support\Facades\Storage::url($path);
         }
 

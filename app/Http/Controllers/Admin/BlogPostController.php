@@ -100,7 +100,7 @@ class BlogPostController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -124,12 +124,12 @@ class BlogPostController extends Controller
 
         $featuredImagePath = null;
         if ($request->hasFile('image')) {
-            $featuredImagePath = $request->file('image')->store('blog', 'public');
+            $featuredImagePath = $imageService->uploadAndConvert($request->file('image'), 'blog', 'public');
         }
 
         $ogImagePath = null;
         if ($request->hasFile('og_image')) {
-            $ogImagePath = $request->file('og_image')->store('blog/social', 'public');
+            $ogImagePath = $imageService->uploadAndConvert($request->file('og_image'), 'blog/social', 'public');
         }
 
         $post = BlogPost::create([
@@ -202,7 +202,7 @@ class BlogPostController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, \App\Services\ImageService $imageService)
     {
         $post = BlogPost::findOrFail($id);
 
@@ -232,7 +232,7 @@ class BlogPostController extends Controller
             if ($post->featured_image) {
                 Storage::disk('public')->delete($post->featured_image);
             }
-            $featuredImagePath = $request->file('image')->store('blog', 'public');
+            $featuredImagePath = $imageService->uploadAndConvert($request->file('image'), 'blog', 'public');
         }
 
         $ogImagePath = $post->og_image;
@@ -241,7 +241,7 @@ class BlogPostController extends Controller
             if ($post->og_image) {
                 Storage::disk('public')->delete($post->og_image);
             }
-            $ogImagePath = $request->file('og_image')->store('blog/social', 'public');
+            $ogImagePath = $imageService->uploadAndConvert($request->file('og_image'), 'blog/social', 'public');
         }
 
         $post->update([

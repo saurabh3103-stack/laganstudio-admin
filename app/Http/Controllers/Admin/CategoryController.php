@@ -46,7 +46,7 @@ class CategoryController extends Controller
         return Inertia::render('Admin/Category/Create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'name' => 'required|string|max:100|unique:categories,name',
@@ -57,7 +57,7 @@ class CategoryController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $imagePath = $imageService->uploadAndConvert($request->file('image'), 'categories', 'public');
         }
 
         Category::create([
@@ -71,7 +71,7 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')->with('success', 'Category created successfully!');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, \App\Services\ImageService $imageService)
     {
         $category = Category::findOrFail($id);
 
@@ -88,7 +88,7 @@ class CategoryController extends Controller
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $imagePath = $imageService->uploadAndConvert($request->file('image'), 'categories', 'public');
         }
 
         $category->update([

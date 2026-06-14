@@ -41,7 +41,7 @@ class BlogCategoryController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'name' => 'required|string|max:100|unique:blog_categories,name',
@@ -52,7 +52,7 @@ class BlogCategoryController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('blog/categories', 'public');
+            $imagePath = $imageService->uploadAndConvert($request->file('image'), 'blog/categories', 'public');
         }
 
         BlogCategory::create([
@@ -66,7 +66,7 @@ class BlogCategoryController extends Controller
         return redirect()->route('blog.categories')->with('success', 'Blog Category created successfully!');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, \App\Services\ImageService $imageService)
     {
         $category = BlogCategory::findOrFail($id);
 
@@ -83,7 +83,7 @@ class BlogCategoryController extends Controller
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
-            $imagePath = $request->file('image')->store('blog/categories', 'public');
+            $imagePath = $imageService->uploadAndConvert($request->file('image'), 'blog/categories', 'public');
         }
 
         $category->update([

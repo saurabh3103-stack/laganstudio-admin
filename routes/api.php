@@ -23,3 +23,4 @@ Route::get('blogs', [FrontendController::class, 'getBlogs']);
 Route::get('blogs/{slug}', [FrontendController::class, 'getBlog']);
 Route::get('faqs', [FrontendController::class, 'getFaqs']);
 Route::post('contact', [FrontendController::class, 'submitContact']);
+Route::post('subscribe', [FrontendController::class, 'subscribeNewsletter']);

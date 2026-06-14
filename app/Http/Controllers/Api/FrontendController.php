@@ -193,18 +193,54 @@ class FrontendController extends Controller
             'phone' => 'required|string|max:20',
             'service' => 'nullable|string|max:255',
             'date' => 'nullable|date',
+            'subject' => 'nullable|string|max:255',
             'message' => 'required|string'
         ]);
 
-        // Normally, you would save this to a Contact or Inquiry model
-        // and/or send an email notification.
-        // For now, we will just return success.
-        
-        // Example: ContactInquiry::create($validated);
+        $subject = $validated['subject'] ?? (!empty($validated['service']) ? 'Inquiry about: ' . $validated['service'] : null);
+        $message = $validated['message'];
+        if (!empty($validated['date'])) {
+            $message .= "\n\nPreferred Date: " . $validated['date'];
+        }
+
+        \App\Models\ContactQuery::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'subject' => $subject,
+            'message' => $message,
+            'status' => 'Unread',
+        ]);
 
         return response()->json([
             'message' => 'Thank you! We\'ll reach out within 24 hours.',
             'data' => $validated
+        ], 201);
+    }
+
+    /**
+     * Handle newsletter subscription.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function subscribeNewsletter(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|max:255'
+        ]);
+
+        $subscriber = \App\Models\NewsletterSubscriber::firstOrCreate(
+            ['email' => $validated['email']],
+            ['status' => 'Active']
+        );
+
+        // If they were previously unsubscribed, resubscribe them
+        if (!$subscriber->wasRecentlyCreated && $subscriber->status !== 'Active') {
+            $subscriber->update(['status' => 'Active']);
+        }
+
+        return response()->json([
+            'message' => 'Successfully subscribed to the newsletter!'
         ], 201);
     }
 }

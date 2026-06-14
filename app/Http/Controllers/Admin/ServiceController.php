@@ -53,7 +53,7 @@ class ServiceController extends Controller
     /**
      * Store a newly created service in database.
      */
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'service_name' => 'required|string|max:255',
@@ -85,19 +85,19 @@ class ServiceController extends Controller
 
         // Upload service cover/featured image
         if ($request->hasFile('featured_image')) {
-            $path = $request->file('featured_image')->store('services/covers', 'public');
+            $path = $imageService->uploadAndConvert($request->file('featured_image'), 'services/covers', 'public');
             $data['featured_image'] = Storage::url($path);
         }
 
         // Upload banner image
         if ($request->hasFile('banner_image')) {
-            $path = $request->file('banner_image')->store('services/banners', 'public');
+            $path = $imageService->uploadAndConvert($request->file('banner_image'), 'services/banners', 'public');
             $data['banner_image'] = Storage::url($path);
         }
 
         // Upload og image
         if ($request->hasFile('og_image')) {
-            $path = $request->file('og_image')->store('services/og', 'public');
+            $path = $imageService->uploadAndConvert($request->file('og_image'), 'services/og', 'public');
             $data['og_image'] = Storage::url($path);
         }
 
@@ -130,7 +130,7 @@ class ServiceController extends Controller
     /**
      * Update the specified service in database.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, \App\Services\ImageService $imageService)
     {
         $service = Service::findOrFail($id);
 
@@ -169,7 +169,7 @@ class ServiceController extends Controller
                 $oldPath = str_replace('/storage/', '', $service->featured_image);
                 Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('featured_image')->store('services/covers', 'public');
+            $path = $imageService->uploadAndConvert($request->file('featured_image'), 'services/covers', 'public');
             $data['featured_image'] = Storage::url($path);
         }
 
@@ -179,7 +179,7 @@ class ServiceController extends Controller
                 $oldPath = str_replace('/storage/', '', $service->banner_image);
                 Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('banner_image')->store('services/banners', 'public');
+            $path = $imageService->uploadAndConvert($request->file('banner_image'), 'services/banners', 'public');
             $data['banner_image'] = Storage::url($path);
         }
 
@@ -189,7 +189,7 @@ class ServiceController extends Controller
                 $oldPath = str_replace('/storage/', '', $service->og_image);
                 Storage::disk('public')->delete($oldPath);
             }
-            $path = $request->file('og_image')->store('services/og', 'public');
+            $path = $imageService->uploadAndConvert($request->file('og_image'), 'services/og', 'public');
             $data['og_image'] = Storage::url($path);
         }
 
@@ -336,7 +336,7 @@ class ServiceController extends Controller
      * Nested Portfolios & Albums Methods
      * ---------------------------------------------------------
      */
-    public function savePortfolio(Request $request, $serviceId)
+    public function savePortfolio(Request $request, $serviceId, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'id' => 'nullable|integer',
@@ -363,7 +363,7 @@ class ServiceController extends Controller
                     $oldPath = str_replace('/storage/', '', $portfolio->cover_image);
                     Storage::disk('public')->delete($oldPath);
                 }
-                $path = $request->file('cover_image')->store('portfolios/covers', 'public');
+                $path = $imageService->uploadAndConvert($request->file('cover_image'), 'portfolios/covers', 'public');
                 $data['cover_image'] = Storage::url($path);
             }
 
@@ -371,7 +371,7 @@ class ServiceController extends Controller
             $msg = 'Portfolio album details updated.';
         } else {
             if ($request->hasFile('cover_image')) {
-                $path = $request->file('cover_image')->store('portfolios/covers', 'public');
+                $path = $imageService->uploadAndConvert($request->file('cover_image'), 'portfolios/covers', 'public');
                 $data['cover_image'] = Storage::url($path);
             }
 
@@ -404,7 +404,7 @@ class ServiceController extends Controller
         return redirect()->back()->with('success', 'Portfolio album deleted successfully.');
     }
 
-    public function uploadPortfolioImage(Request $request, $portfolioId)
+    public function uploadPortfolioImage(Request $request, $portfolioId, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'image' => 'required|image|max:10240', // Max 10MB
@@ -417,7 +417,7 @@ class ServiceController extends Controller
         $data['display_order'] = $request->input('display_order', 0);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('portfolios/gallery', 'public');
+            $path = $imageService->uploadAndConvert($request->file('image'), 'portfolios/gallery', 'public');
             $data['image'] = Storage::url($path);
         }
 

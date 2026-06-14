@@ -120,7 +120,7 @@ export default function All({ blogs, stats, categories, filters }) {
                                 <select
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="px-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-semibold text-gray-600"
+                                    className="pl-4 pr-10 py-2.5 bg-gray-50 border-transparent rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-semibold text-gray-600"
                                 >
                                     <option value="">All Categories</option>
                                     {categories.map(cat => (
@@ -131,7 +131,7 @@ export default function All({ blogs, stats, categories, filters }) {
                                 <select
                                     value={selectedStatus}
                                     onChange={(e) => setSelectedStatus(e.target.value)}
-                                    className="px-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-semibold text-gray-600"
+                                    className="pl-4 pr-10 py-2.5 bg-gray-50 border-transparent rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-semibold text-gray-600"
                                 >
                                     <option value="">All Statuses</option>
                                     <option value="Published">Published</option>

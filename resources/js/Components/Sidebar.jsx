@@ -244,6 +244,7 @@ export default function Sidebar({ isOpen = true, isMobileOpen = false, onCloseMo
                                 {isOpen && isDropdownOpen('queries') && (
                                     <div className="pl-3 py-1 mt-1 space-y-1 border-l-2 border-white/10 ml-5">
                                         <Link href="/queries/contact" className={getLinkClass('/queries/contact')} onClick={handleLinkClick}>Contact Queries</Link>
+                                        <Link href="/queries/newsletter" className={getLinkClass('/queries/newsletter')} onClick={handleLinkClick}>Newsletter</Link>
                                         <Link href="/queries/support" className={getLinkClass('/queries/support')} onClick={handleLinkClick}>Support Tickets</Link>
                                         <Link href="/queries/feedback" className={getLinkClass('/queries/feedback')} onClick={handleLinkClick}>Feedback</Link>
                                     </div>

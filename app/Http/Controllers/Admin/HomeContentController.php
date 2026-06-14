@@ -20,7 +20,7 @@ class HomeContentController extends Controller
         ]);
     }
 
-    public function storeBanner(Request $request)
+    public function storeBanner(Request $request, \App\Services\ImageService $imageService)
     {
         $request->validate([
             'title' => 'nullable|string|max:255',
@@ -38,7 +38,7 @@ class HomeContentController extends Controller
         $data['display_order'] = $request->input('display_order', 0);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('home_banners', 'public');
+            $path = $imageService->uploadAndConvert($request->file('image'), 'home_banners', 'public');
             $data['image_path'] = Storage::url($path);
         }
 
@@ -47,7 +47,7 @@ class HomeContentController extends Controller
         return redirect()->back()->with('success', 'Banner created successfully.');
     }
 
-    public function updateBanner(Request $request, $id)
+    public function updateBanner(Request $request, $id, \App\Services\ImageService $imageService)
     {
         $banner = HomeBanner::findOrFail($id);
 
@@ -72,7 +72,7 @@ class HomeContentController extends Controller
                 Storage::disk('public')->delete($oldPath);
             }
 
-            $path = $request->file('image')->store('home_banners', 'public');
+            $path = $imageService->uploadAndConvert($request->file('image'), 'home_banners', 'public');
             $data['image_path'] = Storage::url($path);
         }
 
@@ -131,7 +131,7 @@ class HomeContentController extends Controller
         ]);
     }
 
-    public function updateAbout(Request $request)
+    public function updateAbout(Request $request, \App\Services\ImageService $imageService)
     {
         $about = AboutSection::first();
 
@@ -159,7 +159,7 @@ class HomeContentController extends Controller
                 Storage::disk('public')->delete($oldPath);
             }
 
-            $path = $request->file('image')->store('home_about', 'public');
+            $path = $imageService->uploadAndConvert($request->file('image'), 'home_about', 'public');
             $data['image_path'] = Storage::url($path);
         }
 
