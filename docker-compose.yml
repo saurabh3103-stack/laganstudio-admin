@@ -10,11 +10,12 @@ services:
       - .:/var/www/laganstudio-admin
 
   db:
-    image: mysql:8.0
+    image: postgres:15
     container_name: laravel_db
     restart: always
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: root123
+      POSTGRES_DB: laravel
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root123
     ports:
-      - "3306:3306"
+      - "5432:5432"
