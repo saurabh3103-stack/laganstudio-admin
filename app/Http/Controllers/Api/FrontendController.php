@@ -136,10 +136,21 @@ class FrontendController extends Controller
         $cacheKey = 'api_blogs_limit_' . $limit . '_page_' . $page;
 
         $blogs = Cache::remember($cacheKey, 3600, function () use ($limit) {
-            return BlogPost::with('category', 'tags')
+            $paginator = BlogPost::with('category', 'tags')
                         ->where('status', "Published")
                         ->orderBy('published_at', 'desc')
                         ->paginate($limit);
+
+            $paginator->getCollection()->transform(function ($blog) {
+                if ($blog->featured_image) {
+                    $blog->featured_image = str_starts_with($blog->featured_image, '/storage') 
+                                ? asset($blog->featured_image) 
+                                : asset('storage/' . $blog->featured_image);
+                }
+                return $blog;
+            });
+
+            return $paginator;
         });
 
         return response()->json($blogs);
@@ -153,10 +164,18 @@ class FrontendController extends Controller
     public function getBlog($slug)
     {
         $blog = Cache::remember('api_blog_' . $slug, 3600, function () use ($slug) {
-            return BlogPost::with('category', 'tags', 'author')
+            $post = BlogPost::with('category', 'tags', 'author')
                         ->where('status', "Published")
                         ->where('slug', $slug)
                         ->firstOrFail();
+
+            if ($post->featured_image) {
+                $post->featured_image = str_starts_with($post->featured_image, '/storage') 
+                                ? asset($post->featured_image) 
+                                : asset('storage/' . $post->featured_image);
+            }
+
+            return $post;
         });
 
         return response()->json([
